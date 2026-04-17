@@ -1,0 +1,217 @@
+.dashboard-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 24px;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+.dashboard-header .brand {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* New Modern Icon Wrapper */
+.brand-icon {
+  background: linear-gradient(135deg, #1976d2, #42a5f5);
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
+}
+
+.brand-icon mat-icon {
+  color: #ffffff;
+}
+
+.dashboard-header .brand h1 {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #2c3e50;
+  letter-spacing: -0.5px;
+}
+
+.dashboard-header .user-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.dashboard-header .user-actions .user-email {
+  color: #546e7a;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.sign-out-btn {
+  border-radius: 8px;
+  color: #546e7a;
+  border-color: #cfd8dc;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+/* Softer shadows and rounder corners for a sleek look */
+.summary-card {
+  padding: 28px 30px;
+  border-radius: 16px;
+  background-color: #ffffff;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+  border: none;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Modern colored accent bar on the left instead of a full border */
+.summary-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 12px;
+}
+
+.summary-card.total::before {
+  background-color: #1976d2;
+}
+.summary-card.highest::before {
+  background-color: #ef5350;
+}
+.summary-card.average::before {
+  background-color: #26a69a;
+}
+
+.summary-card mat-card-subtitle {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #78909c;
+  margin-bottom: 12px;
+}
+
+.summary-card mat-card-title {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #263238;
+}
+
+.content-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+}
+
+@media (max-width: 900px) {
+  .content-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.activity-card,
+.chart-card {
+  padding: 28px;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+  background-color: #ffffff;
+  border: none;
+}
+
+.activity-card h2,
+.chart-card h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #263238;
+  margin: 0 0 24px 0;
+}
+
+.card-header-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.card-header-flex h2 {
+  margin: 0;
+}
+
+.add-btn {
+  border-radius: 8px;
+  padding: 0 20px;
+  font-weight: 500;
+  box-shadow: 0 4px 12px rgba(25, 118, 210, 0.2);
+}
+
+.styled-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.styled-table th,
+.styled-table td {
+  padding: 16px;
+  text-align: left;
+  border-bottom: 1px solid #f0f2f5;
+}
+
+.styled-table th {
+  color: #78909c;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.styled-table td {
+  color: #455a64;
+  font-size: 0.95rem;
+}
+
+.styled-table .category-badge {
+  background: #e3f2fd;
+  color: #1976d2;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.styled-table .expense-text {
+  color: #ef5350;
+  font-weight: 600;
+}
+
+.styled-table .income-text {
+  color: #26a69a;
+  font-weight: 600;
+}
+
+.styled-table .empty-state {
+  text-align: center;
+  color: #90a4ae;
+  padding: 60px 20px;
+  font-size: 0.95rem;
+}
+
+.chart-card .empty-state {
+  text-align: center;
+  color: #90a4ae;
+  padding: 40px 20px;
+  font-size: 0.95rem;
+}

@@ -1,0 +1,96 @@
+<div class="dashboard-container">
+  <header class="dashboard-header">
+    <div class="brand">
+      <div class="brand-icon">
+        <mat-icon>account_balance_wallet</mat-icon>
+      </div>
+      <h1>Expense Tracker</h1>
+    </div>
+    <div class="user-actions">
+      <span class="user-email">Welcome, {{ authService.currentUser()?.email }}</span>
+      <button mat-stroked-button class="sign-out-btn" (click)="logout()">Sign Out</button>
+    </div>
+  </header>
+
+  <div class="summary-grid">
+    <mat-card class="summary-card total">
+      <mat-card-subtitle>Total Spent</mat-card-subtitle>
+      <mat-card-title>${{ totalSpent() | number: '1.2-2' }}</mat-card-title>
+    </mat-card>
+
+    <mat-card class="summary-card highest">
+      <mat-card-subtitle>Highest Expense</mat-card-subtitle>
+      <mat-card-title>${{ highestExpense() | number: '1.2-2' }}</mat-card-title>
+    </mat-card>
+
+    <mat-card class="summary-card average">
+      <mat-card-subtitle>Average Transaction</mat-card-subtitle>
+      <mat-card-title>${{ averageTransaction() | number: '1.2-2' }}</mat-card-title>
+    </mat-card>
+  </div>
+
+  <div class="content-grid">
+    <mat-card class="activity-card">
+      <div class="card-header-flex">
+        <h2>Recent Activity</h2>
+        <button mat-flat-button class="add-btn" color="primary">
+          <mat-icon>add</mat-icon> Add Expense
+        </button>
+      </div>
+
+      <div class="table-container">
+        <table class="styled-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Title</th>
+              <th>Category</th>
+              <th>Amount</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (expense of expenseService.expenses(); track expense.id) {
+              <tr>
+                <td>{{ expense.date | date: 'MMM d, y' }}</td>
+                <td>{{ expense.title }}</td>
+                <td>
+                  <span class="category-badge">{{ expense.category }}</span>
+                </td>
+                <td
+                  [ngClass]="{
+                    'income-text': expense.type === 'income',
+                    'expense-text': expense.type === 'expense',
+                  }"
+                >
+                  {{ expense.type === 'income' ? '+' : '-' }}${{ expense.amount | number: '1.2-2' }}
+                </td>
+                <td>
+                  <button mat-icon-button color="warn" (click)="deleteTransaction(expense.id!)">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="5" class="empty-state">
+                  No transactions found. Add one to get started.
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </mat-card>
+
+    <mat-card class="chart-card">
+      <h2>Category Breakdown</h2>
+      @if (totalSpent() > 0) {
+        <canvas baseChart [data]="pieChartData()" [type]="pieChartType" [options]="pieChartOptions">
+        </canvas>
+      } @else {
+        <div class="empty-state">No data to display.</div>
+      }
+    </mat-card>
+  </div>
+</div>
