@@ -1,0 +1,73 @@
+<div class="auth-wrapper">
+  <mat-card class="auth-card mat-elevation-z4">
+    <mat-card-header class="header-container">
+      <mat-card-title class="brand-title">Expense Tracker</mat-card-title>
+      <mat-card-subtitle>Welcome back! Please sign in.</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      @if (errorMessage()) {
+        <div class="error-banner">{{ errorMessage() }}</div>
+      }
+
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="form-container">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Email</mat-label>
+          <input matInput formControlName="email" type="email" placeholder="name@example.com" />
+          @if (loginForm.get('email')?.hasError('email')) {
+            <mat-error>Please enter a valid email address</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Password</mat-label>
+          <input
+            matInput
+            formControlName="password"
+            [type]="hidePassword() ? 'password' : 'text'"
+          />
+          <button
+            mat-icon-button
+            matSuffix
+            (click)="hidePassword.set(!hidePassword())"
+            type="button"
+          >
+            <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+        </mat-form-field>
+
+        <button
+          mat-flat-button
+          color="primary"
+          class="full-width submit-btn"
+          type="submit"
+          [disabled]="loginForm.invalid"
+        >
+          Sign In
+        </button>
+      </form>
+
+      <div class="divider">
+        <span>OR</span>
+      </div>
+
+      <button
+        mat-stroked-button
+        class="full-width google-btn"
+        type="button"
+        (click)="loginWithGoogle()"
+      >
+        <img
+          src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+          alt="Google Logo"
+          class="google-icon"
+        />
+        Sign in with Google
+      </button>
+    </mat-card-content>
+
+    <mat-card-footer class="footer-text">
+      Don't have an account? <a routerLink="/register" class="link">Create one here</a>
+    </mat-card-footer>
+  </mat-card>
+</div>
