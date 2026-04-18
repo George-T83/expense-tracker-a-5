@@ -3,21 +3,31 @@ import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
 import { AuthService } from '../../services/auth';
 import { ExpenseService } from '../../services/expense';
+import { AddTransactionComponent } from '../add-transaction/add-transaction';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatButtonModule, MatIconModule, BaseChartDirective],
+  imports: [
+    CommonModule,
+    MatCardModule,
+    MatButtonModule,
+    MatIconModule,
+    BaseChartDirective,
+    MatDialogModule,
+  ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
 export class DashboardComponent {
   authService = inject(AuthService);
   expenseService = inject(ExpenseService);
+  dialog = inject(MatDialog);
 
   // Computed signals for summary cards
   totalSpent = computed(() => {
@@ -73,5 +83,12 @@ export class DashboardComponent {
     if (confirm('Are you sure you want to delete this transaction?')) {
       this.expenseService.deleteExpense(id);
     }
+  }
+
+  openAddTransactionDialog() {
+    this.dialog.open(AddTransactionComponent, {
+      width: '450px',
+      disableClose: true, // Forces user to click cancel or save
+    });
   }
 }

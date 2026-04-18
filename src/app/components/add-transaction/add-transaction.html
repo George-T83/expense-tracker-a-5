@@ -1,0 +1,44 @@
+<h2 mat-dialog-title>Add Transaction</h2>
+<mat-dialog-content>
+  <form [formGroup]="expenseForm" class="expense-form">
+    <mat-radio-group formControlName="type" class="type-selector">
+      <mat-radio-button value="expense" color="warn">Expense</mat-radio-button>
+      <mat-radio-button value="income" color="primary">Income</mat-radio-button>
+    </mat-radio-group>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Title (e.g., Target Run)</mat-label>
+      <input matInput formControlName="title" type="text" />
+    </mat-form-field>
+
+    <div class="row">
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>Amount</mat-label>
+        <span matTextPrefix>$&nbsp;</span>
+        <input matInput formControlName="amount" type="number" step="0.01" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>Date</mat-label>
+        <input matInput [matDatepicker]="picker" formControlName="date" />
+        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Category</mat-label>
+      <mat-select formControlName="category">
+        @for (cat of currentCategories(); track cat) {
+          <mat-option [value]="cat">{{ cat }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancel</button>
+  <button mat-flat-button color="primary" [disabled]="expenseForm.invalid" (click)="onSubmit()">
+    Save
+  </button>
+</mat-dialog-actions>

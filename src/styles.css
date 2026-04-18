@@ -13,3 +13,11 @@ body {
   min-height: 100vh;
   padding: 1rem;
 }
+
+::ng-deep .warning-snackbar {
+  background-color: #ef4444 !important;
+  color: white !important;
+}
+::ng-deep .warning-snackbar .mat-mdc-button {
+  color: #ffebee !important;
+}

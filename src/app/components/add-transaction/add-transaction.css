@@ -1,0 +1,47 @@
+.expense-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 8px;
+  min-width: 350px;
+}
+
+.type-selector {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 16px;
+  justify-content: center;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.row {
+  display: flex;
+  gap: 16px;
+}
+
+.half-width {
+  flex: 1;
+}
+
+::ng-deep .sleek-dropdown {
+  border-radius: 12px !important;
+  box-shadow: 0 12px 32px rgba(25, 118, 210, 0.15) !important;
+  padding: 8px !important;
+  border: 1px solid #f1f5f9;
+}
+
+::ng-deep .sleek-dropdown .mat-mdc-option {
+  border-radius: 8px;
+  margin: 4px 8px;
+  min-height: 40px !important;
+}
+
+::ng-deep .sleek-dropdown .mat-mdc-option:hover:not(.mdc-list-item--disabled),
+::ng-deep .sleek-dropdown .mat-mdc-option.mdc-list-item--selected {
+  background-color: #e4effb !important;
+  color: #1976d2 !important;
+  font-weight: 500;
+}

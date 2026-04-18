@@ -33,8 +33,8 @@
     <mat-card class="activity-card">
       <div class="card-header-flex">
         <h2>Recent Activity</h2>
-        <button mat-flat-button class="add-btn" color="primary">
-          <mat-icon>add</mat-icon> Add Expense
+        <button mat-flat-button color="primary" (click)="openAddTransactionDialog()">
+          <mat-icon>add</mat-icon> Add Transaction
         </button>
       </div>
 
@@ -73,9 +73,7 @@
               </tr>
             } @empty {
               <tr>
-                <td colspan="5" class="empty-state">
-                  No transactions found. Add one to get started.
-                </td>
+                <td colspan="5" class="empty-state">No expenses found. Add one to get started.</td>
               </tr>
             }
           </tbody>

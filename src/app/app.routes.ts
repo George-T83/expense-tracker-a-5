@@ -1,6 +1,4 @@
 import { Routes } from '@angular/router';
-
-// Top-level static imports as requested, omitting '.component' in the file paths
 import { LoginComponent } from './components/login/login';
 import { RegisterComponent } from './components/register/register';
 import { DashboardComponent } from './components/dashboard/dashboard';

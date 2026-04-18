@@ -66,6 +66,15 @@ export class AuthService {
     }
   }
 
+  waitForAuth(): Promise<boolean> {
+    return new Promise((resolve) => {
+      const unsubscribe = onAuthStateChanged(this.auth, (user) => {
+        unsubscribe(); // Detach immediately after getting the answer
+        resolve(!!user); // Returns true if user exists, false if null
+      });
+    });
+  }
+
   // --- LOGOUT ---
   async logout() {
     await signOut(this.auth);
