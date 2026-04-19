@@ -1,0 +1,155 @@
+<div class="dashboard-container">
+  <header class="dashboard-header">
+    <div class="brand">
+      <div class="brand-icon">
+        <mat-icon>person</mat-icon>
+      </div>
+      <h1>Profile & Settings</h1>
+    </div>
+    <div class="user-actions">
+      <button mat-flat-button color="primary" (click)="saveProfile()">
+        <mat-icon>save</mat-icon> Save Changes
+      </button>
+      <button mat-stroked-button routerLink="/dashboard">
+        <mat-icon>arrow_back</mat-icon> Back to Dashboard
+      </button>
+    </div>
+  </header>
+
+  <div class="profile-grid">
+    <div class="column">
+      <mat-card class="settings-card user-info-card">
+        <h2>Account Information</h2>
+        <p class="subtitle">Update your personal details.</p>
+
+        <mat-form-field appearance="outline" class="full-width mt-16">
+          <mat-label>Email Address</mat-label>
+          <input matInput [value]="userEmail()" disabled />
+          <mat-icon matSuffix>lock</mat-icon>
+          <mat-hint>Email cannot be changed.</mat-hint>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width mt-16">
+          <mat-label>Display Name</mat-label>
+          <input matInput [ngModel]="displayName()" (ngModelChange)="displayName.set($event)" />
+        </mat-form-field>
+      </mat-card>
+
+      <mat-card class="settings-card">
+        <h2>Manage Categories</h2>
+        <p class="subtitle">View defaults and add custom tags for your transactions.</p>
+
+        <div class="add-category-controls">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Category Name</mat-label>
+            <input
+              matInput
+              [ngModel]="newCategoryName()"
+              (ngModelChange)="newCategoryName.set($event)"
+            />
+          </mat-form-field>
+
+          <div class="color-picker-wrapper">
+            <label>Color</label>
+            <input
+              type="color"
+              class="color-input"
+              [ngModel]="newCategoryColor()"
+              (ngModelChange)="newCategoryColor.set($event)"
+            />
+          </div>
+        </div>
+
+        <div class="add-category-actions">
+          <mat-radio-group
+            [ngModel]="newCategoryType()"
+            (ngModelChange)="newCategoryType.set($event)"
+            class="type-radio-group"
+          >
+            <mat-radio-button value="expense" color="warn">Expense</mat-radio-button>
+            <mat-radio-button value="income" color="primary">Income</mat-radio-button>
+          </mat-radio-group>
+
+          <button mat-flat-button color="primary" class="add-btn" (click)="addCategory()">
+            Add Category
+          </button>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <h3 class="list-section-title">System Defaults</h3>
+        <div class="category-list">
+          @for (cat of defaultCategories; track cat.name) {
+            <div class="category-item">
+              <span
+                class="category-badge"
+                [style.backgroundColor]="cat.color"
+                [style.color]="getTextColor(cat.color)"
+              >
+                {{ cat.name }}
+              </span>
+              <span
+                class="category-type"
+                [ngClass]="cat.type === 'income' ? 'income-text' : 'expense-text'"
+              >
+                ({{ cat.type }})
+              </span>
+              <mat-icon class="lock-icon" title="Default Category">lock</mat-icon>
+            </div>
+          }
+        </div>
+
+        <h3 class="list-section-title mt-24">Your Custom Categories</h3>
+        <div class="category-list">
+          @for (cat of customCategories(); track cat.name) {
+            <div class="category-item">
+              <span
+                class="category-badge"
+                [style.backgroundColor]="cat.color"
+                [style.color]="getTextColor(cat.color)"
+              >
+                {{ cat.name }}
+              </span>
+              <span
+                class="category-type"
+                [ngClass]="cat.type === 'income' ? 'income-text' : 'expense-text'"
+              >
+                ({{ cat.type }})
+              </span>
+              <button mat-icon-button color="warn" (click)="removeCategory(cat.name)">
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+          } @empty {
+            <p class="empty-state">No custom categories added yet.</p>
+          }
+        </div>
+      </mat-card>
+    </div>
+
+    <div class="column">
+      <mat-card class="settings-card">
+        <h2>Monthly Budgets</h2>
+        <p class="subtitle">Set spending limits to trigger alerts.</p>
+
+        <div class="budget-list mt-16">
+          @for (cat of getExpenseCategories(); track cat) {
+            <div class="budget-row">
+              <span class="budget-cat-name">{{ cat }}</span>
+              <mat-form-field appearance="outline" class="budget-input">
+                <span matTextPrefix>$&nbsp;</span>
+                <input
+                  matInput
+                  type="number"
+                  placeholder="No limit"
+                  [value]="monthlyBudgets()[cat] || ''"
+                  (change)="updateBudget(cat, $any($event.target).value)"
+                />
+              </mat-form-field>
+            </div>
+          }
+        </div>
+      </mat-card>
+    </div>
+  </div>
+</div>
