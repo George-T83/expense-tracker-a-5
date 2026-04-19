@@ -23,9 +23,14 @@
       <mat-card-title>${{ highestExpense() | number: '1.2-2' }}</mat-card-title>
     </mat-card>
 
-    <mat-card class="summary-card average">
-      <mat-card-subtitle>Average Transaction</mat-card-subtitle>
-      <mat-card-title>${{ averageTransaction() | number: '1.2-2' }}</mat-card-title>
+    <mat-card class="summary-card average-expense">
+      <mat-card-subtitle>Average Expense</mat-card-subtitle>
+      <mat-card-title>${{ averageExpense() | number: '1.2-2' }}</mat-card-title>
+    </mat-card>
+
+    <mat-card class="summary-card average-income">
+      <mat-card-subtitle>Average Income</mat-card-subtitle>
+      <mat-card-title>${{ averageIncome() | number: '1.2-2' }}</mat-card-title>
     </mat-card>
   </div>
 

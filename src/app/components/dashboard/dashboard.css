@@ -1,5 +1,4 @@
 .dashboard-container {
-  max-width: 1200px;
   margin: 0 auto;
   padding: 32px 24px;
 }
@@ -61,7 +60,7 @@
 
 .summary-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 24px;
   margin-bottom: 32px;
 }
@@ -93,7 +92,10 @@
 .summary-card.highest::before {
   background-color: #ef5350;
 }
-.summary-card.average::before {
+.summary-card.average-expense::before {
+  background-color: #263238;
+}
+.summary-card.average-income::before {
   background-color: #26a69a;
 }
 
