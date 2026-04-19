@@ -9,11 +9,13 @@ import { MatInputModule } from '@angular/material/input';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { RouterModule } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
 import { AuthService } from '../../services/auth';
 import { ExpenseService } from '../../services/expense';
+import { ProfileService } from '../../services/profile';
 import { AddTransactionComponent } from '../add-transaction/add-transaction';
 
 @Component({
@@ -31,6 +33,7 @@ import { AddTransactionComponent } from '../add-transaction/add-transaction';
     MatDatepickerModule,
     MatSelectModule,
     MatDialogModule,
+    RouterModule,
   ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
@@ -38,6 +41,7 @@ import { AddTransactionComponent } from '../add-transaction/add-transaction';
 export class DashboardComponent {
   authService = inject(AuthService);
   expenseService = inject(ExpenseService);
+  profileService = inject(ProfileService);
   toastr = inject(ToastrService);
   dialog = inject(MatDialog);
 
@@ -71,31 +75,21 @@ export class DashboardComponent {
   startDate = signal<Date | null>(null);
   endDate = signal<Date | null>(null);
 
-  availableCategories = signal<string[]>([
-    'Housing',
-    'Food',
-    'Transportation',
-    'Utilities',
-    'Entertainment',
-    'Shopping',
-    'Salary/Wages',
-    'Scholarships/Grants',
-    'Investments',
-    'Other',
-  ]);
+  availableCategories = computed(() => {
+    const defaults = this.profileService.defaultCategories.map((c) => c.name);
+    const customs = this.profileService.profile()?.customCategories.map((c) => c.name) || [];
+    return [...defaults, ...customs];
+  });
   selectedCategories = signal<string[]>([]);
 
   // --- COMPUTED FILTERED DATA ---
   filteredExpenses = computed(() => {
     let data = this.expenseService.expenses();
 
-    // 1. Text Search (Title only, leaving room for Notes later)
+    // 1. Text Search by Title
     const term = this.searchTerm().toLowerCase();
     if (term) {
-      data = data.filter(
-        (e) =>
-          e.title.toLowerCase().includes(term) || (e.notes && e.notes.toLowerCase().includes(term)),
-      );
+      data = data.filter((e) => e.title.toLowerCase().includes(term));
     }
 
     // 2. Multi-Select Category Filter
@@ -146,16 +140,53 @@ export class DashboardComponent {
       categoryTotals[e.category] = (categoryTotals[e.category] || 0) + e.amount;
     });
 
+    const labels = Object.keys(categoryTotals);
+    const data = Object.values(categoryTotals);
+
+    // Map the correct colors to the pie chart slices
+    const bgColors = labels.map((label) => this.getCategoryColor(label));
+
     return {
-      labels: Object.keys(categoryTotals),
+      labels: labels,
       datasets: [
         {
-          data: Object.values(categoryTotals),
-          backgroundColor: ['#42A5F5', '#66BB6A', '#FFA726', '#AB47BC', '#EF5350'],
+          data: data,
+          backgroundColor: bgColors, // Use dynamic colors
+          borderWidth: 1,
         },
       ],
     };
   });
+
+  // HELPER METHOD to get colors for charts and table badges
+  getCategoryColor(categoryName: string): string {
+    const def = this.profileService.defaultCategories.find((c) => c.name === categoryName);
+    if (def) return def.color;
+
+    const cust = this.profileService
+      .profile()
+      ?.customCategories.find((c) => c.name === categoryName);
+    if (cust) return cust.color;
+
+    return '#cbd5e1'; // Fallback gray
+  }
+
+  // Calculates perceived brightness to return dark or light text
+  getTextColor(hexColor: string): string {
+    // Strip the '#' if present
+    const hex = hexColor.replace('#', '');
+
+    // Convert to RGB
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+
+    // YIQ equation for color contrast
+    const yiq = (r * 299 + g * 587 + b * 114) / 1000;
+
+    // Return dark slate text for light backgrounds, white text for dark backgrounds
+    return yiq >= 128 ? '#1e293b' : '#ffffff';
+  }
 
   public pieChartOptions: ChartConfiguration['options'] = {
     responsive: true,

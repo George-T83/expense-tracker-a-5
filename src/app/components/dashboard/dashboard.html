@@ -8,6 +8,9 @@
     </div>
     <div class="user-actions">
       <span class="user-email">Welcome, {{ authService.currentUser()?.email }}</span>
+      <button mat-button routerLink="/profile" color="primary">
+        <mat-icon>person</mat-icon> Profile
+      </button>
       <button mat-stroked-button class="sign-out-btn" (click)="logout()">Sign Out</button>
     </div>
   </header>
@@ -132,7 +135,12 @@
                 <td>{{ expense.title }}</td>
                 <td>{{ expense.notes || '-' }}</td>
                 <td>
-                  <span class="category-badge">{{ expense.category }}</span>
+                  <span
+                    class="category-badge"
+                    [style.backgroundColor]="getCategoryColor(expense.category)"
+                    [style.color]="getTextColor(getCategoryColor(expense.category))"
+                    >{{ expense.category }}</span
+                  >
                 </td>
                 <td
                   [ngClass]="{
