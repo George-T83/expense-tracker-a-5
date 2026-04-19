@@ -10,8 +10,8 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatRadioModule } from '@angular/material/radio';
 import { ToastrService } from 'ngx-toastr';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { ExpenseService } from '../../services/expense';
+import { ProfileService } from '../../services/profile';
 
 @Component({
   selector: 'app-add-transaction',
@@ -36,6 +36,7 @@ export class AddTransactionComponent implements OnInit {
   private expenseService = inject(ExpenseService);
   private dialogRef = inject(MatDialogRef<AddTransactionComponent>);
   private toastr = inject(ToastrService);
+  private profileService = inject(ProfileService);
 
   expenseCategories = [
     'Housing',
@@ -47,7 +48,7 @@ export class AddTransactionComponent implements OnInit {
   ];
   incomeCategories = ['Salary/Wages', 'Scholarships/Grants', 'Investments', 'Other'];
 
-  currentCategories = signal<string[]>(this.expenseCategories);
+  currentCategories = signal<string[]>([]);
 
   // Hardcoded budget limits for the assignment requirement
   budgetLimits: Record<string, number> = {
@@ -66,16 +67,28 @@ export class AddTransactionComponent implements OnInit {
   });
 
   ngOnInit() {
+    // Initial load for default 'expense' type
+    this.updateCategoryList('expense');
+
     // Dynamically switch dropdown options when the radio button changes
     this.expenseForm.get('type')?.valueChanges.subscribe((type) => {
-      if (type === 'income') {
-        this.currentCategories.set(this.incomeCategories);
-      } else {
-        this.currentCategories.set(this.expenseCategories);
-      }
-      // Clear the invalid category selection
+      this.updateCategoryList(type);
       this.expenseForm.get('category')?.setValue('');
     });
+  }
+
+  updateCategoryList(type: string | null) {
+    const defaults = this.profileService.defaultCategories
+      .filter((c) => c.type === type)
+      .map((c) => c.name);
+
+    const customs =
+      this.profileService
+        .profile()
+        ?.customCategories.filter((c) => c.type === type)
+        .map((c) => c.name) || [];
+
+    this.currentCategories.set([...defaults, ...customs]);
   }
 
   async onSubmit() {
@@ -85,23 +98,24 @@ export class AddTransactionComponent implements OnInit {
       const category = formValue.category as string;
       const type = formValue.type as string;
 
+      // PULL LIVE BUDGETS FROM FIRESTORE PROFILE
+      const userBudgets = this.profileService.profile()?.monthlyBudgets || {};
+
       // BUDGET ALERT LOGIC
-      if (type === 'expense' && this.budgetLimits[category]) {
+      if (type === 'expense' && userBudgets[category]) {
         const currentCategoryTotal = this.expenseService
           .expenses()
           .filter((e) => e.category === category && e.type === 'expense')
           .reduce((sum, e) => sum + e.amount, 0);
 
-        if (currentCategoryTotal + newAmount > this.budgetLimits[category]) {
-          // Use .error for red, .warning for orange, .info for blue, .success for green
+        if (currentCategoryTotal + newAmount > userBudgets[category]) {
           this.toastr.error(
-            `This puts you over your $${this.budgetLimits[category]} budget!`,
+            `This puts you over your $${userBudgets[category]} budget!`,
             `${category} Limit Exceeded`,
           );
         }
       }
 
-      // Format date to ISO string for Firestore
       const expenseData = {
         title: formValue.title!,
         amount: newAmount,
@@ -113,10 +127,10 @@ export class AddTransactionComponent implements OnInit {
 
       try {
         await this.expenseService.addExpense(expenseData);
-        this.dialogRef.close(true); // Close modal on success
+        this.dialogRef.close(true);
       } catch (error) {
         console.error('Error adding document: ', error);
-        this.toastr.error('Failed to add transaction.', 'Error'); // UPDATED THIS LINE
+        this.toastr.error('Failed to add transaction.', 'Error');
       }
     }
   }
