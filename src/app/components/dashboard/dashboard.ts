@@ -164,6 +164,50 @@ export class DashboardComponent {
     },
   };
 
+  // --- BAR CHART CONFIGURATION ---
+  public barChartType: ChartType = 'bar';
+  public barChartData = computed<ChartData<'bar'>>(() => {
+    // We use the raw expense array here so the chart always shows the grand total,
+    // regardless of what the user is searching for in the table.
+    const allTransactions = this.expenseService.expenses();
+
+    const totalIncome = allTransactions
+      .filter((e) => e.type === 'income')
+      .reduce((sum, e) => sum + e.amount, 0);
+
+    const totalExpense = allTransactions
+      .filter((e) => e.type === 'expense')
+      .reduce((sum, e) => sum + e.amount, 0);
+
+    return {
+      labels: ['Overall Cash Flow'], // A single group label on the X-axis
+      datasets: [
+        {
+          data: [totalIncome],
+          label: 'Income',
+          backgroundColor: '#66BB6A', // Green
+          borderRadius: 6,
+        },
+        {
+          data: [totalExpense],
+          label: 'Expense',
+          backgroundColor: '#EF5350', // Red
+          borderRadius: 6,
+        },
+      ],
+    };
+  });
+
+  public barChartOptions: ChartConfiguration['options'] = {
+    responsive: true,
+    plugins: {
+      legend: { position: 'bottom' },
+    },
+    scales: {
+      y: { beginAtZero: true },
+    },
+  };
+
   logout() {
     this.authService.logout();
   }

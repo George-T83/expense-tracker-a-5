@@ -142,6 +142,13 @@
   margin: 0 0 24px 0;
 }
 
+/* Stack charts vertically on the right side */
+.charts-column {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
 .card-header-flex {
   display: flex;
   justify-content: space-between;

@@ -164,14 +164,34 @@
       </div>
     </mat-card>
 
-    <mat-card class="chart-card">
-      <h2>Category Breakdown</h2>
-      @if (totalSpent() > 0) {
-        <canvas baseChart [data]="pieChartData()" [type]="pieChartType" [options]="pieChartOptions">
-        </canvas>
-      } @else {
-        <div class="empty-state">No data to display.</div>
-      }
-    </mat-card>
+    <div class="charts-column">
+      <mat-card class="chart-card">
+        <h2>Category Breakdown</h2>
+        @if (totalSpent() > 0) {
+          <canvas
+            baseChart
+            [data]="pieChartData()"
+            [type]="pieChartType"
+            [options]="pieChartOptions"
+          ></canvas>
+        } @else {
+          <div class="empty-state">No expense data to display.</div>
+        }
+      </mat-card>
+
+      <mat-card class="chart-card">
+        <h2>Income vs Expense</h2>
+        @if (expenseService.expenses().length > 0) {
+          <canvas
+            baseChart
+            [data]="barChartData()"
+            [type]="barChartType"
+            [options]="barChartOptions"
+          ></canvas>
+        } @else {
+          <div class="empty-state">No data to display.</div>
+        }
+      </mat-card>
+    </div>
   </div>
 </div>
