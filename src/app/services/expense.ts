@@ -21,6 +21,7 @@ export interface Expense {
   category: string;
   date: string;
   type: 'expense' | 'income';
+  notes?: string;
 }
 
 @Injectable({ providedIn: 'root' })

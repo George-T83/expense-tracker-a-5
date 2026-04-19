@@ -62,6 +62,7 @@ export class AddTransactionComponent implements OnInit {
     category: ['', Validators.required],
     date: [new Date(), Validators.required],
     type: ['expense', Validators.required],
+    notes: [''],
   });
 
   ngOnInit() {
@@ -107,6 +108,7 @@ export class AddTransactionComponent implements OnInit {
         category: category,
         date: (formValue.date as Date).toISOString(),
         type: type as 'expense' | 'income',
+        notes: formValue.notes || '',
       };
 
       try {
