@@ -3,6 +3,8 @@ import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
 import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 import { provideNativeDateAdapter } from '@angular/material/core';
+import { provideAnimations } from '@angular/platform-browser/animations';
+import { provideToastr } from 'ngx-toastr';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -10,5 +12,12 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideCharts(withDefaultRegisterables()),
     provideNativeDateAdapter(),
+    provideAnimations(),
+    provideToastr({
+      positionClass: 'toast-top-right',
+      progressBar: true,
+      timeOut: 5000,
+      preventDuplicates: true,
+    }),
   ],
 };
