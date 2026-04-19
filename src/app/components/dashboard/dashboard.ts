@@ -27,6 +27,7 @@ import { AddTransactionComponent } from '../add-transaction/add-transaction';
 export class DashboardComponent {
   authService = inject(AuthService);
   expenseService = inject(ExpenseService);
+  toastr = inject(ToastrService);
   dialog = inject(MatDialog);
 
   // Computed signals for summary cards

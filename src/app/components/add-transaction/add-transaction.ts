@@ -9,6 +9,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatRadioModule } from '@angular/material/radio';
+import { ToastrService } from 'ngx-toastr';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { ExpenseService } from '../../services/expense';
 
@@ -26,7 +27,6 @@ import { ExpenseService } from '../../services/expense';
     MatDatepickerModule,
     MatNativeDateModule,
     MatRadioModule,
-    MatSnackBarModule,
   ],
   templateUrl: './add-transaction.html',
   styleUrl: './add-transaction.css',
@@ -35,7 +35,7 @@ export class AddTransactionComponent implements OnInit {
   private fb = inject(FormBuilder);
   private expenseService = inject(ExpenseService);
   private dialogRef = inject(MatDialogRef<AddTransactionComponent>);
-  private snackBar = inject(MatSnackBar);
+  private toastr = inject(ToastrService);
 
   expenseCategories = [
     'Housing',
@@ -84,7 +84,7 @@ export class AddTransactionComponent implements OnInit {
       const category = formValue.category as string;
       const type = formValue.type as string;
 
-      // BUDGET ALERT LOGIC (Requirement 5)
+      // BUDGET ALERT LOGIC
       if (type === 'expense' && this.budgetLimits[category]) {
         const currentCategoryTotal = this.expenseService
           .expenses()
@@ -92,13 +92,10 @@ export class AddTransactionComponent implements OnInit {
           .reduce((sum, e) => sum + e.amount, 0);
 
         if (currentCategoryTotal + newAmount > this.budgetLimits[category]) {
-          this.snackBar.open(
-            `⚠️ Alert: This puts you over your $${this.budgetLimits[category]} ${category} budget!`,
-            'Dismiss',
-            {
-              duration: 5000,
-              panelClass: ['warning-snackbar'],
-            },
+          // Use .error for red, .warning for orange, .info for blue, .success for green
+          this.toastr.error(
+            `This puts you over your $${this.budgetLimits[category]} budget!`,
+            `${category} Limit Exceeded`,
           );
         }
       }
@@ -117,7 +114,7 @@ export class AddTransactionComponent implements OnInit {
         this.dialogRef.close(true); // Close modal on success
       } catch (error) {
         console.error('Error adding document: ', error);
-        this.snackBar.open('Failed to add transaction.', 'Close', { duration: 3000 });
+        this.toastr.error('Failed to add transaction.', 'Error'); // UPDATED THIS LINE
       }
     }
   }
