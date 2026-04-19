@@ -215,3 +215,43 @@
   padding: 40px 20px;
   font-size: 0.95rem;
 }
+/* Filter Bar Styles */
+.filters-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding: 16px;
+  background-color: #f8fafc;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  align-items: center;
+}
+
+.filter-field {
+  margin-bottom: -1.25em;
+}
+
+.search-field {
+  flex: 1.5;
+  min-width: 150px;
+}
+
+.category-field {
+  flex: 1.5;
+  min-width: 180px;
+}
+
+.amount-field {
+  flex: 1;
+  min-width: 90px;
+}
+
+.date-field {
+  flex: 2;
+  min-width: 220px;
+}
+
+.clear-btn {
+  margin-top: 4px;
+}

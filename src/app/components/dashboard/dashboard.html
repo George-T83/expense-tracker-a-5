@@ -38,22 +38,94 @@
         </button>
       </div>
 
+      <div class="filters-container">
+        <mat-form-field appearance="outline" class="filter-field search-field">
+          <mat-label>Search Title</mat-label>
+          <mat-icon matPrefix>search</mat-icon>
+          <input matInput [ngModel]="searchTerm()" (ngModelChange)="searchTerm.set($event)" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="filter-field category-field">
+          <mat-label>Category</mat-label>
+          <mat-select
+            multiple
+            [ngModel]="selectedCategories()"
+            (ngModelChange)="selectedCategories.set($event)"
+          >
+            @for (cat of availableCategories(); track cat) {
+              <mat-option [value]="cat">{{ cat }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="filter-field amount-field">
+          <mat-label>Min $</mat-label>
+          <input
+            matInput
+            type="number"
+            [ngModel]="minAmount()"
+            (ngModelChange)="minAmount.set($event)"
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="filter-field amount-field">
+          <mat-label>Max $</mat-label>
+          <input
+            matInput
+            type="number"
+            [ngModel]="maxAmount()"
+            (ngModelChange)="maxAmount.set($event)"
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="filter-field date-field">
+          <mat-label>Date Range</mat-label>
+          <mat-date-range-input [rangePicker]="filterPicker">
+            <input
+              matStartDate
+              placeholder="Start"
+              [ngModel]="startDate()"
+              (ngModelChange)="startDate.set($event)"
+            />
+            <input
+              matEndDate
+              placeholder="End"
+              [ngModel]="endDate()"
+              (ngModelChange)="endDate.set($event)"
+            />
+          </mat-date-range-input>
+          <mat-datepicker-toggle matIconSuffix [for]="filterPicker"></mat-datepicker-toggle>
+          <mat-date-range-picker #filterPicker></mat-date-range-picker>
+        </mat-form-field>
+
+        <button
+          mat-icon-button
+          color="warn"
+          (click)="clearFilters()"
+          title="Clear Filters"
+          class="clear-btn"
+        >
+          <mat-icon>clear_all</mat-icon>
+        </button>
+      </div>
       <div class="table-container">
         <table class="styled-table">
           <thead>
             <tr>
               <th>Date</th>
               <th>Title</th>
+              <th>Notes</th>
               <th>Category</th>
               <th>Amount</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            @for (expense of expenseService.expenses(); track expense.id) {
+            @for (expense of filteredExpenses(); track expense.id) {
               <tr>
                 <td>{{ expense.date | date: 'MMM d, y' }}</td>
                 <td>{{ expense.title }}</td>
+                <td>{{ expense.notes || '-' }}</td>
                 <td>
                   <span class="category-badge">{{ expense.category }}</span>
                 </td>
@@ -73,7 +145,13 @@
               </tr>
             } @empty {
               <tr>
-                <td colspan="5" class="empty-state">No expenses found. Add one to get started.</td>
+                <td colspan="6" class="empty-state">
+                  @if (expenseService.expenses().length === 0) {
+                    No expenses found. Add one to get started.
+                  } @else {
+                    No transactions match your search.
+                  }
+                </td>
               </tr>
             }
           </tbody>

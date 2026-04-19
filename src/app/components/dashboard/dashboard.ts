@@ -1,9 +1,15 @@
-import { Component, inject, computed } from '@angular/core';
+import { Component, inject, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatSelectModule } from '@angular/material/select';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { ToastrService } from 'ngx-toastr';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
 import { AuthService } from '../../services/auth';
@@ -19,6 +25,11 @@ import { AddTransactionComponent } from '../add-transaction/add-transaction';
     MatButtonModule,
     MatIconModule,
     BaseChartDirective,
+    FormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatDatepickerModule,
+    MatSelectModule,
     MatDialogModule,
   ],
   templateUrl: './dashboard.html',
@@ -43,10 +54,87 @@ export class DashboardComponent {
     return expenses.length ? Math.max(...expenses.map((e) => e.amount)) : 0;
   });
 
-  averageTransaction = computed(() => {
+  averageExpense = computed(() => {
     const expenses = this.expenseService.expenses().filter((e) => e.type === 'expense');
     return expenses.length ? this.totalSpent() / expenses.length : 0;
   });
+
+  averageIncome = computed(() => {
+    const incomes = this.expenseService.expenses().filter((e) => e.type === 'income');
+    return incomes.length ? incomes.reduce((sum, e) => sum + e.amount, 0) / incomes.length : 0;
+  });
+
+  // --- FILTER SIGNALS ---
+  searchTerm = signal<string>('');
+  minAmount = signal<number | null>(null);
+  maxAmount = signal<number | null>(null);
+  startDate = signal<Date | null>(null);
+  endDate = signal<Date | null>(null);
+
+  availableCategories = signal<string[]>([
+    'Housing',
+    'Food',
+    'Transportation',
+    'Utilities',
+    'Entertainment',
+    'Shopping',
+    'Salary/Wages',
+    'Scholarships/Grants',
+    'Investments',
+    'Other',
+  ]);
+  selectedCategories = signal<string[]>([]);
+
+  // --- COMPUTED FILTERED DATA ---
+  filteredExpenses = computed(() => {
+    let data = this.expenseService.expenses();
+
+    // 1. Text Search (Title only, leaving room for Notes later)
+    const term = this.searchTerm().toLowerCase();
+    if (term) {
+      data = data.filter(
+        (e) =>
+          e.title.toLowerCase().includes(term) || (e.notes && e.notes.toLowerCase().includes(term)),
+      );
+    }
+
+    // 2. Multi-Select Category Filter
+    const cats = this.selectedCategories();
+    if (cats.length > 0) {
+      data = data.filter((e) => cats.includes(e.category));
+    }
+
+    // 3. Amount Filters
+    const min = this.minAmount();
+    if (min !== null) data = data.filter((e) => e.amount >= min);
+
+    const max = this.maxAmount();
+    if (max !== null) data = data.filter((e) => e.amount <= max);
+
+    // 4. Date Range Filters
+    const start = this.startDate();
+    if (start) {
+      start.setHours(0, 0, 0, 0);
+      data = data.filter((e) => new Date(e.date) >= start);
+    }
+
+    const end = this.endDate();
+    if (end) {
+      end.setHours(23, 59, 59, 999);
+      data = data.filter((e) => new Date(e.date) <= end);
+    }
+
+    return data;
+  });
+
+  clearFilters() {
+    this.searchTerm.set('');
+    this.selectedCategories.set([]);
+    this.minAmount.set(null);
+    this.maxAmount.set(null);
+    this.startDate.set(null);
+    this.endDate.set(null);
+  }
 
   // Chart configuration
   public pieChartType: ChartType = 'pie';
