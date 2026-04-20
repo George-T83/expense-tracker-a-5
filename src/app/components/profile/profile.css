@@ -110,6 +110,22 @@
   margin-bottom: -1.25em;
 }
 
+.icon-field {
+  width: 220px;
+}
+
+.icon-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.icon-option mat-icon {
+  width: 18px;
+  height: 18px;
+  font-size: 18px;
+}
+
 .color-picker-wrapper {
   display: flex;
   flex-direction: column;
@@ -170,11 +186,20 @@
 }
 
 .category-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   font-size: 0.9rem;
   font-weight: 500;
   padding: 4px 12px;
   border-radius: 12px;
   border: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+.category-badge mat-icon {
+  width: 16px;
+  height: 16px;
+  font-size: 16px;
 }
 
 .category-type {

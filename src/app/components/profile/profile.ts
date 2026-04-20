@@ -48,6 +48,23 @@ export class ProfileComponent {
   newCategoryName = signal('');
   newCategoryType = signal<'expense' | 'income'>('expense');
   newCategoryColor = signal('#1976d2');
+  newCategoryIcon = signal('label');
+  categoryIconOptions = [
+    'label',
+    'home',
+    'restaurant',
+    'directions_car',
+    'bolt',
+    'movie',
+    'shopping_cart',
+    'payments',
+    'school',
+    'trending_up',
+    'flight',
+    'health_and_safety',
+    'pets',
+    'local_grocery_store',
+  ];
 
   constructor() {
     effect(() => {

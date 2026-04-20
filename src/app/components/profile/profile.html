@@ -49,6 +49,27 @@
             />
           </mat-form-field>
 
+          <mat-form-field appearance="outline" class="icon-field">
+            <mat-label>Icon</mat-label>
+            <mat-select [ngModel]="newCategoryIcon()" (ngModelChange)="newCategoryIcon.set($event)">
+              <mat-select-trigger>
+                <span class="icon-option">
+                  <mat-icon>{{ newCategoryIcon() }}</mat-icon>
+                  {{ formatIconLabel(newCategoryIcon()) }}
+                </span>
+              </mat-select-trigger>
+
+              @for (icon of categoryIconOptions; track icon) {
+                <mat-option [value]="icon">
+                  <span class="icon-option">
+                    <mat-icon>{{ icon }}</mat-icon>
+                    {{ formatIconLabel(icon) }}
+                  </span>
+                </mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
           <div class="color-picker-wrapper">
             <label>Color</label>
             <input
@@ -86,6 +107,7 @@
                 [style.backgroundColor]="cat.color"
                 [style.color]="getTextColor(cat.color)"
               >
+                <mat-icon>{{ cat.icon || 'label' }}</mat-icon>
                 {{ cat.name }}
               </span>
               <span
@@ -108,6 +130,7 @@
                 [style.backgroundColor]="cat.color"
                 [style.color]="getTextColor(cat.color)"
               >
+                <mat-icon>{{ cat.icon || 'label' }}</mat-icon>
                 {{ cat.name }}
               </span>
               <span

@@ -142,8 +142,10 @@
                     class="category-badge"
                     [style.backgroundColor]="getCategoryColor(expense.category)"
                     [style.color]="getTextColor(getCategoryColor(expense.category))"
-                    >{{ expense.category }}</span
                   >
+                    <mat-icon>{{ getCategoryIcon(expense.category) }}</mat-icon>
+                    {{ expense.category }}
+                  </span>
                 </td>
                 <td
                   [ngClass]="{

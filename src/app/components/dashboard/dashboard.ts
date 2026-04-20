@@ -187,6 +187,18 @@ export class DashboardComponent {
     return '#cbd5e1'; // Fallback gray
   }
 
+  getCategoryIcon(categoryName: string): string {
+    const def = this.profileService.defaultCategories.find((c) => c.name === categoryName);
+    if (def?.icon) return def.icon;
+
+    const cust = this.profileService
+      .profile()
+      ?.customCategories.find((c) => c.name === categoryName);
+    if (cust?.icon) return cust.icon;
+
+    return 'label';
+  }
+
   // Calculates perceived brightness to return dark or light text
   getTextColor(hexColor: string): string {
     // Strip the '#' if present
