@@ -1,9 +1,10 @@
-import { Component, inject, effect, signal } from '@angular/core';
+import { Component, inject, effect, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
@@ -22,6 +23,7 @@ import { ToastrService } from 'ngx-toastr';
     MatCardModule,
     MatFormFieldModule,
     MatInputModule,
+    MatSelectModule,
     MatButtonModule,
     MatIconModule,
     MatDividerModule,
@@ -38,7 +40,7 @@ export class ProfileComponent {
 
   displayName = signal('');
   userEmail = signal('');
-  customCategories = signal<Category[]>([]);
+  customCategories = computed(() => this.profileService.profile()?.customCategories || []);
   monthlyBudgets = signal<Record<string, number>>({});
 
   defaultCategories = this.profileService.defaultCategories;
@@ -53,13 +55,12 @@ export class ProfileComponent {
       if (p) {
         this.displayName.set(p.displayName || '');
         this.userEmail.set(p.email || '');
-        this.customCategories.set([...(p.customCategories || [])]);
         this.monthlyBudgets.set({ ...(p.monthlyBudgets || {}) });
       }
     });
   }
 
-  addCategory() {
+  async addCategory() {
     const name = this.newCategoryName().trim();
     if (!name) return;
 
@@ -78,23 +79,43 @@ export class ProfileComponent {
       name: name,
       type: this.newCategoryType(),
       color: this.newCategoryColor(),
+      icon: this.newCategoryIcon(),
     };
 
-    this.customCategories.update((cats) => [...cats, newCat]);
+    try {
+      await this.profileService.addCustomCategory(newCat);
+      this.toastr.success('Custom category added.', 'Saved');
+    } catch (error) {
+      console.error(error);
+      this.toastr.error('Failed to add category.');
+      return;
+    }
 
     // Reset form
     this.newCategoryName.set('');
     this.newCategoryType.set('expense');
     this.newCategoryColor.set('#1976d2');
+    this.newCategoryIcon.set('label');
   }
 
-  removeCategory(catName: string) {
-    this.customCategories.update((cats) => cats.filter((c) => c.name !== catName));
+  async removeCategory(category: Category) {
+    if (!category.id) {
+      this.toastr.error('This category cannot be deleted because it has no ID.');
+      return;
+    }
+
+    try {
+      await this.profileService.deleteCustomCategory(category.id);
+    } catch (error) {
+      console.error(error);
+      this.toastr.error('Failed to remove category.');
+      return;
+    }
 
     const currentBudgets = this.monthlyBudgets();
-    if (currentBudgets[catName]) {
+    if (currentBudgets[category.name]) {
       const updated = { ...currentBudgets };
-      delete updated[catName];
+      delete updated[category.name];
       this.monthlyBudgets.set(updated);
     }
   }
@@ -135,11 +156,14 @@ export class ProfileComponent {
     this.monthlyBudgets.set(updated);
   }
 
+  formatIconLabel(iconName: string): string {
+    return iconName.replace(/_/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase());
+  }
+
   async saveProfile() {
     try {
       await this.profileService.updateProfile({
         displayName: this.displayName(),
-        customCategories: this.customCategories(),
         monthlyBudgets: this.monthlyBudgets(),
       });
       this.toastr.success('Profile and budgets updated successfully!', 'Saved');
