@@ -112,22 +112,29 @@ export class AddTransactionComponent implements OnInit {
 
       const userBudgets = this.profileService.profile()?.monthlyBudgets || {};
 
-      // BUDGET ALERT LOGIC (Only alert on new expenses or if the category changed)
+      // BUDGET ALERT LOGIC
       if (type === 'expense' && userBudgets[category]) {
         let currentCategoryTotal = this.expenseService
           .expenses()
           .filter((e) => e.category === category && e.type === 'expense')
           .reduce((sum, e) => sum + e.amount, 0);
 
-        // If editing, subtract the old amount from the total before checking the new amount
         if (this.isEditMode() && this.data.expense.category === category) {
           currentCategoryTotal -= this.data.expense.amount;
         }
 
-        if (currentCategoryTotal + newAmount > userBudgets[category]) {
-          this.toastr.warning(
-            `This puts you over your $${userBudgets[category]} budget!`,
+        const newTotal = currentCategoryTotal + newAmount;
+        const limit = userBudgets[category];
+
+        if (newTotal > limit) {
+          this.toastr.error(
+            `This puts you over your $${limit} budget!`,
             `${category} Limit Exceeded`,
+          );
+        } else if (newTotal >= limit * 0.8) {
+          this.toastr.warning(
+            `You are at ${((newTotal / limit) * 100).toFixed(0)}% of your limit!`,
+            `${category} Budget Nearing`,
           );
         }
       }
