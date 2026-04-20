@@ -51,13 +51,7 @@ export class AddTransactionComponent implements OnInit {
   incomeCategories = ['Salary/Wages', 'Scholarships/Grants', 'Investments', 'Other'];
 
   currentCategories = signal<string[]>([]);
-
-  // Hardcoded budget limits for the assignment requirement
-  budgetLimits: Record<string, number> = {
-    Food: 500,
-    Entertainment: 200,
-    Shopping: 300,
-  };
+  isEditMode = signal(false);
 
   expenseForm = this.fb.group({
     title: ['', Validators.required],
@@ -116,18 +110,22 @@ export class AddTransactionComponent implements OnInit {
       const category = formValue.category as string;
       const type = formValue.type as string;
 
-      // PULL LIVE BUDGETS FROM FIRESTORE PROFILE
       const userBudgets = this.profileService.profile()?.monthlyBudgets || {};
 
-      // BUDGET ALERT LOGIC
+      // BUDGET ALERT LOGIC (Only alert on new expenses or if the category changed)
       if (type === 'expense' && userBudgets[category]) {
-        const currentCategoryTotal = this.expenseService
+        let currentCategoryTotal = this.expenseService
           .expenses()
           .filter((e) => e.category === category && e.type === 'expense')
           .reduce((sum, e) => sum + e.amount, 0);
 
+        // If editing, subtract the old amount from the total before checking the new amount
+        if (this.isEditMode() && this.data.expense.category === category) {
+          currentCategoryTotal -= this.data.expense.amount;
+        }
+
         if (currentCategoryTotal + newAmount > userBudgets[category]) {
-          this.toastr.error(
+          this.toastr.warning(
             `This puts you over your $${userBudgets[category]} budget!`,
             `${category} Limit Exceeded`,
           );
