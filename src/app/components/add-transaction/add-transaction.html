@@ -1,4 +1,4 @@
-<h2 mat-dialog-title>Add Transaction</h2>
+<h2 mat-dialog-title>{{ isEditMode() ? 'Edit' : 'Add' }} Transaction</h2>
 <mat-dialog-content>
   <form [formGroup]="expenseForm" class="expense-form">
     <mat-radio-group formControlName="type" class="type-selector">

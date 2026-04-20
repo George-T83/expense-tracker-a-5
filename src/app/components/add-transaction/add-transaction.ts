@@ -1,7 +1,7 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
+import { MatDialogRef, MatDialogModule, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -38,6 +38,8 @@ export class AddTransactionComponent implements OnInit {
   private toastr = inject(ToastrService);
   private profileService = inject(ProfileService);
 
+  private data = inject(MAT_DIALOG_DATA, { optional: true });
+
   expenseCategories = [
     'Housing',
     'Food',
@@ -67,10 +69,26 @@ export class AddTransactionComponent implements OnInit {
   });
 
   ngOnInit() {
-    // Initial load for default 'expense' type
-    this.updateCategoryList('expense');
+    if (this.data && this.data.expense) {
+      this.isEditMode.set(true);
+      const e = this.data.expense;
 
-    // Dynamically switch dropdown options when the radio button changes
+      // Load categories for the existing type first
+      this.updateCategoryList(e.type);
+
+      // Pre-fill the form
+      this.expenseForm.patchValue({
+        title: e.title,
+        amount: e.amount,
+        category: e.category,
+        date: new Date(e.date),
+        type: e.type,
+        notes: e.notes || '',
+      });
+    } else {
+      this.updateCategoryList('expense');
+    }
+
     this.expenseForm.get('type')?.valueChanges.subscribe((type) => {
       this.updateCategoryList(type);
       this.expenseForm.get('category')?.setValue('');
@@ -126,11 +144,18 @@ export class AddTransactionComponent implements OnInit {
       };
 
       try {
-        await this.expenseService.addExpense(expenseData);
+        if (this.isEditMode()) {
+          // Update existing
+          await this.expenseService.updateExpense(this.data.expense.id, expenseData);
+          this.toastr.success('Transaction updated');
+        } else {
+          // Add new
+          await this.expenseService.addExpense(expenseData);
+        }
         this.dialogRef.close(true);
       } catch (error) {
-        console.error('Error adding document: ', error);
-        this.toastr.error('Failed to add transaction.', 'Error');
+        console.error('Error saving document: ', error);
+        this.toastr.error('Failed to save transaction.', 'Error');
       }
     }
   }

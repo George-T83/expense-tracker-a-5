@@ -151,7 +151,20 @@
                   {{ expense.type === 'income' ? '+' : '-' }}${{ expense.amount | number: '1.2-2' }}
                 </td>
                 <td>
-                  <button mat-icon-button color="warn" (click)="deleteTransaction(expense.id!)">
+                  <button
+                    mat-icon-button
+                    color="primary"
+                    (click)="editTransaction(expense)"
+                    title="Edit"
+                  >
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <button
+                    mat-icon-button
+                    color="warn"
+                    (click)="deleteTransaction(expense.id!)"
+                    title="Delete"
+                  >
                     <mat-icon>delete</mat-icon>
                   </button>
                 </td>

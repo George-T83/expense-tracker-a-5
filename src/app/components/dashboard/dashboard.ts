@@ -243,6 +243,14 @@ export class DashboardComponent {
     this.authService.logout();
   }
 
+  editTransaction(expense: any) {
+    this.dialog.open(AddTransactionComponent, {
+      width: '450px',
+      disableClose: true,
+      data: { expense },
+    });
+  }
+
   deleteTransaction(id: string) {
     if (confirm('Are you sure you want to delete this transaction?')) {
       this.expenseService.deleteExpense(id);

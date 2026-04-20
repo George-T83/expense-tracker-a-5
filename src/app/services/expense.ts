@@ -8,6 +8,7 @@ import {
   where,
   onSnapshot,
   addDoc,
+  updateDoc,
   deleteDoc,
   doc,
 } from 'firebase/firestore';
@@ -70,6 +71,11 @@ export class ExpenseService {
       ...expenseData,
       userId,
     });
+  }
+
+  async updateExpense(id: string, data: Partial<Expense>) {
+    const docRef = doc(this.db, 'transactions', id);
+    await updateDoc(docRef, data);
   }
 
   async deleteExpense(id: string) {
