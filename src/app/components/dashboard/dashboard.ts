@@ -11,6 +11,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { RouterModule } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
 import { AuthService } from '../../services/auth';
@@ -32,6 +33,7 @@ import { AddTransactionComponent } from '../add-transaction/add-transaction';
     MatInputModule,
     MatDatepickerModule,
     MatSelectModule,
+    MatProgressBarModule,
     MatDialogModule,
     RouterModule,
   ],
@@ -100,40 +102,77 @@ export class DashboardComponent {
   // --- COMPUTED FILTERED DATA ---
   filteredExpenses = computed(() => {
     let data = this.expenseService.expenses();
-
-    // 1. Text Search by Title
     const term = this.searchTerm().toLowerCase();
+
     if (term) {
-      data = data.filter((e) => e.title.toLowerCase().includes(term));
+      data = data.filter(
+        (e) =>
+          e.title.toLowerCase().includes(term) || (e.notes && e.notes.toLowerCase().includes(term)),
+      );
     }
 
-    // 2. Multi-Select Category Filter
     const cats = this.selectedCategories();
-    if (cats.length > 0) {
-      data = data.filter((e) => cats.includes(e.category));
-    }
+    if (cats.length > 0) data = data.filter((e) => cats.includes(e.category));
 
-    // 3. Amount Filters
     const min = this.minAmount();
     if (min !== null) data = data.filter((e) => e.amount >= min);
 
     const max = this.maxAmount();
     if (max !== null) data = data.filter((e) => e.amount <= max);
 
-    // 4. Date Range Filters
     const start = this.startDate();
     if (start) {
-      start.setHours(0, 0, 0, 0);
-      data = data.filter((e) => new Date(e.date) >= start);
+      const s = new Date(start);
+      s.setHours(0, 0, 0, 0);
+      data = data.filter((e) => new Date(e.date) >= s);
     }
 
     const end = this.endDate();
     if (end) {
-      end.setHours(23, 59, 59, 999);
-      data = data.filter((e) => new Date(e.date) <= end);
+      const endDateObj = new Date(end);
+      endDateObj.setHours(23, 59, 59, 999);
+      data = data.filter((item) => new Date(item.date) <= endDateObj);
     }
 
     return data;
+  });
+
+  // NEW: Budget vs Actual Comparison for the current month
+  budgetSummary = computed(() => {
+    const budgets = this.profileService.profile()?.monthlyBudgets || {};
+    const allExpenses = this.expenseService.expenses();
+
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+
+    // Filter to only expenses from the current calendar month
+    const thisMonthExpenses = allExpenses.filter((e) => {
+      if (e.type !== 'expense') return false;
+      const d = new Date(e.date);
+      return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
+    });
+
+    const summary = [];
+
+    for (const [category, limit] of Object.entries(budgets)) {
+      const spent = thisMonthExpenses
+        .filter((e) => e.category === category)
+        .reduce((sum, e) => sum + e.amount, 0);
+
+      const percentage = limit > 0 ? (spent / limit) * 100 : 0;
+
+      summary.push({
+        category,
+        spent,
+        limit,
+        percentage: Math.min(percentage, 100),
+        isOver: percentage > 100,
+        isWarning: percentage >= 80 && percentage <= 100,
+      });
+    }
+
+    return summary;
   });
 
   clearFilters() {

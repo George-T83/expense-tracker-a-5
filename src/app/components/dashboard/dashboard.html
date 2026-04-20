@@ -218,6 +218,53 @@
           <div class="empty-state">No data to display.</div>
         }
       </mat-card>
+
+      <mat-card class="chart-card">
+        <h2>Monthly Budgets</h2>
+
+        <div class="budget-tracking-list">
+          @for (item of budgetSummary(); track item.category) {
+            <div class="budget-track-row">
+              <div class="budget-track-header">
+                <span class="budget-category-name">
+                  <span
+                    class="color-dot"
+                    [style.backgroundColor]="getCategoryColor(item.category)"
+                  ></span>
+                  <mat-icon>{{ getCategoryIcon(item.category) }}</mat-icon>
+                  {{ item.category }}
+                </span>
+                <span class="budget-amounts" [ngClass]="{ 'over-budget': item.isOver }">
+                  ${{ item.spent | number: '1.0-2' }} / ${{ item.limit }}
+                </span>
+              </div>
+
+              <mat-progress-bar
+                mode="determinate"
+                [value]="item.percentage"
+                [color]="item.isOver ? 'warn' : item.isWarning ? 'accent' : 'primary'"
+              >
+              </mat-progress-bar>
+
+              <div class="budget-status-text">
+                @if (item.isOver) {
+                  <span class="status-over"
+                    >Over budget by ${{ item.spent - item.limit | number: '1.2-2' }}</span
+                  >
+                } @else if (item.isWarning) {
+                  <span class="status-warn">Approaching limit</span>
+                } @else {
+                  <span class="status-safe"
+                    >${{ item.limit - item.spent | number: '1.2-2' }} remaining</span
+                  >
+                }
+              </div>
+            </div>
+          } @empty {
+            <div class="empty-state">No budgets set. Go to Profile to set spending limits.</div>
+          }
+        </div>
+      </mat-card>
     </div>
   </div>
 </div>

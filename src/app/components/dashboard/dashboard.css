@@ -273,3 +273,69 @@
 .clear-btn {
   margin-top: 4px;
 }
+/* --- Budget Tracking Card Styles --- */
+.budget-tracking-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.budget-track-row {
+  display: flex;
+  flex-direction: column;
+}
+
+.budget-track-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.budget-category-name {
+  font-weight: 600;
+  color: #334155;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.color-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.budget-amounts {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #64748b;
+}
+
+.over-budget {
+  color: #ef4444; /* Red text if over */
+  font-weight: 700;
+}
+
+.budget-status-text {
+  font-size: 0.75rem;
+  text-align: right;
+  font-weight: 500;
+}
+
+.status-over {
+  color: #ef4444;
+}
+.status-warn {
+  color: #f59e0b;
+}
+.status-safe {
+  color: #10b981;
+}
+
+/* Override default Material progress bar height to make it thicker/modern */
+.budget-track-row mat-progress-bar {
+  height: 8px;
+  border-radius: 4px;
+}
