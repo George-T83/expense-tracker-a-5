@@ -7,7 +7,10 @@
       <h1>Expense Tracker</h1>
     </div>
     <div class="user-actions">
-      <span class="user-email">Welcome, {{ authService.currentUser()?.email }}</span>
+      <span class="user-email"
+        >Welcome,
+        {{ profileService.profile()?.displayName || authService.currentUser()?.email }}</span
+      >
       <button mat-button routerLink="/profile" color="primary">
         <mat-icon>person</mat-icon> Profile
       </button>

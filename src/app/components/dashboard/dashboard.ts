@@ -166,8 +166,9 @@ export class DashboardComponent {
       datasets: [
         {
           data: data,
-          backgroundColor: bgColors, // Use dynamic colors
-          borderWidth: 1,
+          backgroundColor: bgColors,
+          borderColor: '#000000',
+          borderWidth: 0.5,
         },
       ],
     };
@@ -233,12 +234,16 @@ export class DashboardComponent {
           label: 'Income',
           backgroundColor: '#66BB6A', // Green
           borderRadius: 6,
+          borderColor: '#000000',
+          borderWidth: 0.5,
         },
         {
           data: [totalExpense],
           label: 'Expense',
           backgroundColor: '#EF5350', // Red
           borderRadius: 6,
+          borderColor: '#000000',
+          borderWidth: 0.5,
         },
       ],
     };
