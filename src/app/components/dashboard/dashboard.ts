@@ -45,6 +45,21 @@ export class DashboardComponent {
   toastr = inject(ToastrService);
   dialog = inject(MatDialog);
 
+  spentThisMonth = computed(() => {
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+
+    return this.expenseService
+      .expenses()
+      .filter((e) => {
+        if (e.type !== 'expense') return false;
+        const d = new Date(e.date);
+        return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
+      })
+      .reduce((sum, e) => sum + e.amount, 0);
+  });
+
   // Computed signals for summary cards
   totalSpent = computed(() => {
     return this.expenseService
