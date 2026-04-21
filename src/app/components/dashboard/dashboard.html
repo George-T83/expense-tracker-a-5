@@ -19,24 +19,14 @@
   </header>
 
   <div class="summary-grid">
-    <mat-card class="summary-card total">
-      <mat-card-subtitle>Total Spent</mat-card-subtitle>
-      <mat-card-title>${{ totalSpent() | number: '1.2-2' }}</mat-card-title>
-    </mat-card>
-
-    <mat-card class="summary-card highest">
-      <mat-card-subtitle>Highest Expense</mat-card-subtitle>
-      <mat-card-title>${{ highestExpense() | number: '1.2-2' }}</mat-card-title>
-    </mat-card>
-
     <mat-card class="summary-card spent-this-month">
       <mat-card-subtitle>Spent This Month</mat-card-subtitle>
       <mat-card-title>${{ spentThisMonth() | number: '1.2-2' }}</mat-card-title>
     </mat-card>
 
-    <mat-card class="summary-card average-income">
-      <mat-card-subtitle>Average Income</mat-card-subtitle>
-      <mat-card-title>${{ averageIncome() | number: '1.2-2' }}</mat-card-title>
+    <mat-card class="summary-card top-category-this-month">
+      <mat-card-subtitle>Top Category This Month</mat-card-subtitle>
+      <mat-card-title>{{ topCategoryThisMonth() }}</mat-card-title>
     </mat-card>
   </div>
 
@@ -193,7 +183,7 @@
     <div class="charts-column">
       <mat-card class="chart-card">
         <h2>Monthly Category Breakdown</h2>
-        @if (totalSpent() > 0) {
+        @if (pieChartData().datasets[0].data.length > 0) {
           <canvas
             baseChart
             [data]="pieChartData()"

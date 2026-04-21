@@ -62,27 +62,34 @@ export class DashboardComponent {
       .reduce((sum, e) => sum + e.amount, 0);
   });
 
-  // Computed signals for summary cards
-  totalSpent = computed(() => {
-    return this.expenseService
+  topCategoryThisMonth = computed(() => {
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+
+    const categoryTotals = this.expenseService
       .expenses()
-      .filter((e) => e.type === 'expense')
-      .reduce((sum, e) => sum + e.amount, 0);
-  });
+      .filter((e) => {
+        if (e.type !== 'expense') return false;
+        const d = new Date(e.date);
+        return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
+      })
+      .reduce<Record<string, number>>((totals, expense) => {
+        totals[expense.category] = (totals[expense.category] || 0) + expense.amount;
+        return totals;
+      }, {});
 
-  highestExpense = computed(() => {
-    const expenses = this.expenseService.expenses().filter((e) => e.type === 'expense');
-    return expenses.length ? Math.max(...expenses.map((e) => e.amount)) : 0;
-  });
+    let topCategory = 'No expenses yet';
+    let topTotal = 0;
 
-  averageExpense = computed(() => {
-    const expenses = this.expenseService.expenses().filter((e) => e.type === 'expense');
-    return expenses.length ? this.totalSpent() / expenses.length : 0;
-  });
+    for (const [category, total] of Object.entries(categoryTotals)) {
+      if (total > topTotal) {
+        topCategory = category;
+        topTotal = total;
+      }
+    }
 
-  averageIncome = computed(() => {
-    const incomes = this.expenseService.expenses().filter((e) => e.type === 'income');
-    return incomes.length ? incomes.reduce((sum, e) => sum + e.amount, 0) / incomes.length : 0;
+    return topCategory;
   });
 
   // --- FILTER SIGNALS ---

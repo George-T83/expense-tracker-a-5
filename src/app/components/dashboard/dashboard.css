@@ -86,17 +86,11 @@
   width: 12px;
 }
 
-.summary-card.total::before {
-  background-color: #1976d2;
-}
-.summary-card.highest::before {
-  background-color: #ef5350;
-}
 .summary-card.spent-this-month::before {
   background-color: #263238;
 }
-.summary-card.average-income::before {
-  background-color: #26a69a;
+.summary-card.top-category-this-month::before {
+  background-color: #1976d2;
 }
 
 .summary-card mat-card-subtitle {
