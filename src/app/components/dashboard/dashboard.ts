@@ -187,7 +187,16 @@ export class DashboardComponent {
   // Chart configuration
   public pieChartType: ChartType = 'pie';
   public pieChartData = computed<ChartData<'pie', number[], string | string[]>>(() => {
-    const expenses = this.expenseService.expenses().filter((e) => e.type === 'expense');
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+
+    // Filter all transactions for the current month
+    const expenses = this.expenseService.expenses().filter((e) => {
+      if (e.type !== 'expense') return false;
+      const d = new Date(e.date);
+      return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
+    });
     const categoryTotals: Record<string, number> = {};
 
     expenses.forEach((e) => {
@@ -265,15 +274,21 @@ export class DashboardComponent {
   // --- BAR CHART CONFIGURATION ---
   public barChartType: ChartType = 'bar';
   public barChartData = computed<ChartData<'bar'>>(() => {
-    // We use the raw expense array here so the chart always shows the grand total,
-    // regardless of what the user is searching for in the table.
-    const allTransactions = this.expenseService.expenses();
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
 
-    const totalIncome = allTransactions
+    // Filter all transactions for the current month
+    const thisMonthTransactions = this.expenseService.expenses().filter((e) => {
+      const d = new Date(e.date);
+      return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
+    });
+
+    const totalIncome = thisMonthTransactions
       .filter((e) => e.type === 'income')
       .reduce((sum, e) => sum + e.amount, 0);
 
-    const totalExpense = allTransactions
+    const totalExpense = thisMonthTransactions
       .filter((e) => e.type === 'expense')
       .reduce((sum, e) => sum + e.amount, 0);
 

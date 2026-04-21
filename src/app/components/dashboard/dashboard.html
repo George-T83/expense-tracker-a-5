@@ -192,7 +192,7 @@
 
     <div class="charts-column">
       <mat-card class="chart-card">
-        <h2>Category Breakdown</h2>
+        <h2>Monthly Category Breakdown</h2>
         @if (totalSpent() > 0) {
           <canvas
             baseChart
@@ -206,7 +206,7 @@
       </mat-card>
 
       <mat-card class="chart-card">
-        <h2>Income vs Expense</h2>
+        <h2>This Month's Income vs Expense</h2>
         @if (expenseService.expenses().length > 0) {
           <canvas
             baseChart
